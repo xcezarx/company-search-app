@@ -15,8 +15,8 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, writeBatch, query, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
-// *** NEW CRITICAL LINE: Assign the global PapaParse to a local const ***
-const PapaParse = window.PapaParse;
+// *** CRITICAL CHANGE: Assign the global window.Papa to a local const ***
+const Papa = window.Papa;
 
 
 // Initialize Firebase
@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadMessage.textContent = 'Parsing CSV file...';
             uploadButton.disabled = true; // Disable until parsing is done
 
-            // Use the local PapaParse constant
-            PapaParse.parse(file, { // Changed from window.PapaParse.parse to just PapaParse.parse
+            // *** Use the local Papa constant ***
+            Papa.parse(file, { // Changed from PapaParse.parse to just Papa.parse
                 header: true, // Assuming the first row is headers
                 dynamicTyping: true, // Convert numbers/booleans to their types
                 skipEmptyLines: true,
