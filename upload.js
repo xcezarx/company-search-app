@@ -10,13 +10,11 @@ const firebaseConfig = {
 };
 // --- END OF FIREBASE CONFIG ---
 
-
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, collection, writeBatch, query, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 // NEW: Import Papa from the PapaParse CDN as a module
 import Papa from 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js';
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -38,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Firebase authenticated anonymously:", user.uid);
             uploadMessage.textContent = 'Authenticated. Ready to upload CSV. Select a file.';
             // Button is enabled after file selection, not just auth.
-            // uploadButton.disabled = false; 
+            // uploadButton.disabled = false;
         } else {
             signInAnonymously(auth)
                 .then(() => {
@@ -53,9 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Disable button initially until a file is selected and parsed
-    uploadButton.disabled = true; 
+    uploadButton.disabled = true;
     uploadMessage.textContent = 'Authenticating... Please select a CSV file.';
-
 
     // Event listener for file selection
     csvFileInput.addEventListener('change', (event) => {
@@ -82,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         uploadMessage.textContent = `CSV parsed successfully. Found ${parsedData.length} rows. Click Upload.`;
                         // Enable button only if authenticated AND file parsed
                         if (auth.currentUser) { // Check if user is already authenticated
-                            uploadButton.disabled = false; 
+                            uploadButton.disabled = false;
                         } else {
                             // If auth not yet complete (though it should be by now), leave disabled
                             uploadMessage.textContent += " Waiting for authentication to complete...";

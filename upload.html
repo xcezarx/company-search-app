@@ -11,7 +11,7 @@
 <body>
     <div class="container upload-page-container"> <h1>Upload New Company Data</h1>
         <p>This page allows you to upload a new CSV file to update the company list in the app.</p>
-        <p>Make sure your CSV has a column named "Company Name" (case-sensitive) or similar that matches what you expect in the search.</p>
+        <p>Make sure your CSV has a column named "Organisation Name" or "Company Name" (case-sensitive) that matches what you expect in the search.</p>
 
         <div class="upload-section">
             <input type="file" id="csvFile" accept=".csv">
@@ -30,5 +30,7 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
     
     <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <script type="module" src="upload.js"></script> </body>
+
+    <script type="module" src="upload.js"></script> 
+</body>
 </html>
