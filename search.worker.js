@@ -1,35 +1,50 @@
-// search.worker.js
+let allCompanies = []; // Stores all parsed companies
+let searchIndex = {}; // Stores the search index (e.g., using object for fast lookup)
 
-let companyData = []; // This will hold the data inside the worker
+// Function to build the search index
+function buildSearchIndex(companies) {
+    searchIndex = {}; // Reset index
+    companies.forEach(company => {
+        // Assuming your CSV has a 'Company Name' column or similar
+        // Adjust 'Company Name' to match the actual header in your CSV
+        const companyName = company['Organisation Name'] || company.name || ''; 
+        if (companyName) {
+            const lowerCaseName = companyName.toLowerCase();
+            // Store original company data, indexed by a simplified name or unique ID
+            searchIndex[lowerCaseName] = company; 
+        }
+    });
+    console.log("Search index built with", Object.keys(searchIndex).length, "companies.");
+}
 
-// Listen for messages from the main script
-self.onmessage = function(event) {
-    const { type, payload } = event.data;
+// Function to perform the search
+function performSearch(query) {
+    if (!query) {
+        return [];
+    }
+    const lowerCaseQuery = query.toLowerCase();
+    const results = [];
 
-    switch (type) {
-        case 'initData':
-            // When the main script sends the company data, store it
-            companyData = payload;
-            console.log('Worker received data:', companyData.length, 'rows');
-            break;
-        case 'search':
-            // When the main script sends a search term, perform the search
-            const searchTerm = payload.toLowerCase().trim();
+    // Simple substring search in company names
+    for (const name in searchIndex) {
+        if (name.includes(lowerCaseQuery)) {
+            results.push(searchIndex[name]);
+        }
+    }
+    return results;
+}
 
-            if (searchTerm.length === 0) {
-                // Send empty results back if search term is empty
-                self.postMessage({ type: 'searchResults', payload: [] });
-                return;
-            }
+// Event listener for messages from the main thread
+self.onmessage = (event) => {
+    const { type, payload, query } = event.data;
 
-            const filteredCompanies = companyData.filter(company => {
-                // IMPORTANT: Use the correct header name here too!
-                // It should be 'Organisation Name'
-                return company['Organisation Name'] && String(company['Organisation Name']).toLowerCase().includes(searchTerm);
-            });
-
-            // Send the filtered results back to the main script
-            self.postMessage({ type: 'searchResults', payload: filteredCompanies });
-            break;
+    if (type === 'load_data') {
+        // Payload is now the array of company objects directly
+        allCompanies = payload;
+        buildSearchIndex(allCompanies);
+        self.postMessage({ type: 'data_loaded', payload: allCompanies }); // Confirm data loaded and indexed
+    } else if (type === 'search') {
+        const results = performSearch(query);
+        self.postMessage({ type: 'search_results', payload: { results, query } });
     }
 };
