@@ -163,3 +163,86 @@ footer {
         padding: 12px 15px; /* Slightly less padding for list items on small screens */
     }
 }
+/* Specific styling for the upload page container */
+.upload-page-container {
+    padding: 30px;
+    max-width: 700px; /* Make it a bit wider than the search app if needed */
+    text-align: center; /* Center the content within it */
+}
+
+/* Styling for the upload input and button section */
+.upload-section {
+    display: flex;
+    flex-direction: column; /* Stack input and button vertically */
+    align-items: center; /* Center them horizontally */
+    gap: 15px; /* Space between elements */
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+#csvFile {
+    /* Style for file input - can be tricky to style universally */
+    padding: 10px;
+    border: 1px solid var(--medium-grey);
+    border-radius: 8px;
+    font-size: 1em;
+    width: 100%; /* Take full width of its parent flex item */
+    max-width: 300px; /* Limit its max width */
+}
+
+#uploadButton {
+    padding: 15px 30px;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+#uploadButton:hover {
+    background-color: var(--accent-blue);
+}
+
+#uploadButton:active {
+    transform: translateY(1px);
+}
+
+#uploadButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Styling for messages on the upload page */
+#uploadMessage {
+    margin-top: 15px;
+    font-size: 1em;
+    color: var(--dark-grey);
+}
+
+/* Styling for the Back to App link button */
+.upload-actions {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.button-link {
+    display: inline-block; /* Treat as block so padding works */
+    padding: 10px 20px;
+    background-color: var(--medium-grey);
+    color: var(--dark-grey);
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.95em;
+    transition: background-color 0.3s ease;
+}
+
+.button-link:hover {
+    background-color: #d0d0d0;
+}
+
+/* General messages */
+p {
+    line-height: 1.6;
+}
