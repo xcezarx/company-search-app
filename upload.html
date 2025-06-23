@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css"> </head>
 <body>
-    <div class="container upload-page-container"> <h1>Upload New Company Data</h1>
+    <div class="container upload-page-container">
+        <h1>Upload New Company Data</h1>
         <p>This page allows you to upload a new CSV file to update the company list in the app.</p>
         <p>Make sure your CSV has a column named "Organisation Name" or "Company Name" (case-sensitive) that matches what you expect in the search.</p>
 
@@ -18,7 +19,8 @@
             <button id="uploadButton">Upload and Update Data</button>
         </div>
         
-        <div id="uploadMessage" class="loading-message"></div> <progress id="uploadProgress" value="0" max="100" style="width: 100%; display: none; margin-top: 15px;"></progress>
+        <div id="uploadMessage" class="loading-message"></div>
+        <progress id="uploadProgress" value="0" max="100" style="width: 100%; display: none; margin-top: 15px;"></progress>
 
         <div class="upload-actions">
             <a href="index.html" class="button-link">Back to Search App</a>
@@ -29,7 +31,7 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
     
-    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <script type="module" src="upload.js"></script> 
 </body>

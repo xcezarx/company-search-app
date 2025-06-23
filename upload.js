@@ -10,11 +10,12 @@ const firebaseConfig = {
 };
 // --- END OF FIREBASE CONFIG ---
 
+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, collection, writeBatch, query, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-// NEW: Import Papa from the PapaParse CDN as a module
-import Papa from 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js';
+// REMOVED: import Papa from 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js';
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -35,8 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             console.log("Firebase authenticated anonymously:", user.uid);
             uploadMessage.textContent = 'Authenticated. Ready to upload CSV. Select a file.';
-            // Button is enabled after file selection, not just auth.
-            // uploadButton.disabled = false;
         } else {
             signInAnonymously(auth)
                 .then(() => {
@@ -54,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadButton.disabled = true;
     uploadMessage.textContent = 'Authenticating... Please select a CSV file.';
 
+
     // Event listener for file selection
     csvFileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadMessage.textContent = 'Parsing CSV file...';
             uploadButton.disabled = true; // Disable until parsing is done
 
-            // Use the imported Papa object
-            Papa.parse(file, { // Changed from PapaParse.parse to Papa.parse
+            // Use the global PapaParse object
+            PapaParse.parse(file, { // Changed back to PapaParse.parse
                 header: true, // Assuming the first row is headers
                 dynamicTyping: true, // Convert numbers/booleans to their types
                 skipEmptyLines: true,
