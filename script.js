@@ -3,11 +3,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsContainer = document.getElementById('results');
     const loadingMessage = document.getElementById('loadingMessage');
     let companyData = []; // This will store our parsed company data
+    let searchTimer; // Variable to hold our debounce timer
+
+    // Create a new element for the search indicator
+    const searchIndicator = document.createElement('div');
+    searchIndicator.id = 'searchIndicator';
+    searchIndicator.className = 'loading-message'; // Reusing loading-message style for now
+    searchIndicator.textContent = 'Searching...';
+    // Insert it right after the search input
+    searchInput.parentNode.insertBefore(searchIndicator, searchInput.nextSibling);
+
+    // --- Debounce function ---
+    // Takes a function and a delay. Returns a new function that will only run
+    // the original function after the delay has passed since the last call.
+    const debounce = (func, delay) => {
+        return function(...args) {
+            const context = this;
+            clearTimeout(searchTimer); // Clear previous timer
+            searchTimer = setTimeout(() => func.apply(context, args), delay);
+        };
+    };
 
     // --- Function to load and parse the CSV ---
     async function loadCSV() {
         loadingMessage.style.display = 'block'; // Show loading message
         resultsContainer.innerHTML = ''; // Clear any previous results/messages
+        searchInput.setAttribute('disabled', 'true'); // Disable input until CSV is loaded
 
         try {
             const response = await fetch('./your_companies.csv'); // Path to your CSV file
@@ -47,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Function to display search results ---
     function displayResults(results) {
         resultsContainer.innerHTML = ''; // Clear previous results
+        searchIndicator.style.display = 'none'; // Hide search indicator once results are ready
 
         if (results.length === 0 && searchInput.value.trim() !== '') {
             resultsContainer.innerHTML = '<p>No companies found matching your search.</p>';
@@ -61,33 +83,37 @@ document.addEventListener('DOMContentLoaded', () => {
         results.forEach(company => {
             const li = document.createElement('li');
             // IMPORTANT: Replace 'CompanyNameColumn' with the actual header name of your company name column in the CSV.
-            // For example, if your CSV has a header 'Company Name', use company['Company Name']
-            // If it's just 'Company', use company.Company
-            li.textContent = company['Organisation Name'] || JSON.stringify(company); // Fallback if column name is wrong
+            li.textContent = company.CompanyNameColumn || JSON.stringify(company); // Fallback if column name is wrong
             ul.appendChild(li);
         });
         resultsContainer.appendChild(ul);
     }
 
-    // --- Search Functionality ---
-    searchInput.addEventListener('input', (event) => {
-        const searchTerm = event.target.value.toLowerCase().trim();
+    // --- Actual search filtering logic ---
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
 
         if (searchTerm.length === 0) {
             displayResults([]); // Clear results if search bar is empty
             return;
         }
 
-        const filteredCompanies = companyData.filter(company => {
-            // IMPORTANT: Adjust 'CompanyNameColumn' here too
-            // Ensure the column exists and convert to lowercase for comparison
-            return company['Organisation Name'] && String(company['Organisation Name']).toLowerCase().includes(searchTerm);
-        });
+        searchIndicator.style.display = 'block'; // Show search indicator while searching
 
-        displayResults(filteredCompanies);
-    });
+        // Use setTimeout to ensure the search indicator shows *before* the potentially long filter runs
+        setTimeout(() => {
+            const filteredCompanies = companyData.filter(company => {
+                // IMPORTANT: Adjust 'CompanyNameColumn' here too
+                return company.CompanyNameColumn && String(company.CompanyNameColumn).toLowerCase().includes(searchTerm);
+            });
+            displayResults(filteredCompanies);
+        }, 10); // A tiny delay to allow UI to update
+    }
+
+    // --- Debounced Search Input Event Listener ---
+    // Calls performSearch only after 300ms of no typing
+    searchInput.addEventListener('input', debounce(performSearch, 300));
 
     // --- Initial Load ---
-    searchInput.setAttribute('disabled', 'true'); // Disable input until CSV is loaded
     loadCSV();
 });
