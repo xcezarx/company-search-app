@@ -21,7 +21,7 @@ body {
     justify-content: center;
     align-items: flex-start; /* Align content to the top */
     min-height: 100vh;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Include padding in element's total width and height */
 }
 
 .container {
@@ -29,10 +29,14 @@ body {
     padding: 30px; /* Increased padding */
     border-radius: 10px; /* Slightly more rounded corners */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
+    max-width: 600px; /* Max width for larger screens */
+    width: 100%; /* Take full width on smaller screens */
+    
+    /* Flexbox for vertical layout within the container */
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box; /* Ensures padding is included in width */
+    min-height: 300px; /* Ensure container has enough minimum height for spacing */
 }
 
 h1 {
@@ -41,10 +45,12 @@ h1 {
     margin-bottom: 25px; /* More space below heading */
     font-weight: 700; /* Bold heading */
     font-size: 2.2em; /* Slightly larger heading */
+    text-align: center; /* Center the heading text */
 }
 
 .search-box {
     margin-bottom: 25px; /* More space below search box */
+    text-align: center; /* Center items within search-box if any */
 }
 
 #searchInput {
@@ -53,7 +59,7 @@ h1 {
     border: 1px solid var(--medium-grey);
     border-radius: 8px; /* Slightly more rounded input */
     font-size: 1.1em; /* Slightly larger font in input */
-    box-sizing: border-box;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
     transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
 }
 
@@ -63,11 +69,13 @@ h1 {
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.3); /* Soft glow on focus */
 }
 
+/* Reused for loading and searching messages */
 .loading-message {
     font-size: 0.9em;
     color: #6c757d; /* Slightly darker grey for clarity */
     margin-top: 15px; /* More space above message */
-    display: none;
+    display: none; /* Hidden by default, shown by JS when loading/searching */
+    text-align: center;
 }
 
 .results-container {
@@ -76,8 +84,10 @@ h1 {
     border: 1px solid var(--medium-grey);
     border-radius: 8px; /* Matching border radius */
     padding: 0; /* Remove initial padding, add to list items */
-    text-align: left;
+    text-align: left; /* Keep results text aligned left */
     background-color: var(--white);
+    flex-grow: 1; /* Allow results to take up available space in the flex container */
+    margin-bottom: 20px; /* Add some space between results and footer */
 }
 
 .results-container ul {
@@ -103,7 +113,22 @@ h1 {
     cursor: pointer; /* Indicate clickable/hoverable */
 }
 
-/* Responsive adjustments */
+/* Attribution Footer Styling */
+footer {
+    flex-shrink: 0; /* Prevents the footer from shrinking */
+    text-align: center; /* Centers the text within the footer */
+    width: 100%; /* Ensures it takes full width within the container */
+    margin-top: auto; /* Pushes the footer to the bottom of the flex container */
+    padding-top: 20px; /* Add some padding above the text */
+}
+
+.attribution {
+    font-size: 0.8em; /* Smaller text */
+    color: #6c757d;   /* Muted grey color */
+}
+
+
+/* Responsive adjustments for smaller screens */
 @media (max-width: 480px) {
     body {
         padding: 10px;
@@ -128,23 +153,4 @@ h1 {
         font-size: 1em;
         padding: 12px 15px;
     }
-}
-/* Attribution Footer Styling */
-.attribution {
-    font-size: 0.8em; /* Smaller text */
-    color: #6c757d;   /* Muted grey color */
-    margin-top: 30px; /* Space above it */
-}
-
-/* Ensure footer is always at the bottom of the container, not just the screen */
-.container {
-    /* Existing styles */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Pushes footer to bottom */
-    min-height: 200px; /* Adjust if your content is shorter than this */
-}
-
-.results-container {
-    flex-grow: 1; /* Allow results to take up available space */
 }
