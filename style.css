@@ -1,3 +1,22 @@
+/* Ensure basic HTML/Body reset */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-primary);
+    /* No padding here; spacing around the container is managed by its margin and width */
+    background-color: var(--light-grey);
+    color: var(--dark-grey);
+    display: flex;
+    justify-content: center; /* Centers the .container horizontally */
+    align-items: flex-start; /* Aligns content to the top vertically */
+    min-height: 100vh; /* Ensures body takes at least full viewport height */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    overflow-x: hidden; /* Prevent horizontal scrolling if any unexpected overflow occurs */
+}
+
 /* Professional Color Palette & Typography Variables */
 :root {
     --primary-blue: #0056b3;      /* A deep, professional blue for main elements */
@@ -11,32 +30,24 @@
     --font-heading: 'Roboto', sans-serif; /* You can use Inter for everything too if preferred */
 }
 
-body {
-    font-family: var(--font-primary);
-    margin: 0;
-    padding: 20px;
-    background-color: var(--light-grey);
-    color: var(--dark-grey);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Align content to the top */
-    min-height: 100vh;
-    box-sizing: border-box; /* Include padding in element's total width and height */
-}
-
 .container {
     background-color: var(--white);
-    padding: 30px; /* Increased padding */
+    padding: 30px; /* Increased padding inside the container */
     border-radius: 10px; /* Slightly more rounded corners */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
-    max-width: 600px; /* Max width for larger screens */
-    width: 100%; /* Take full width on smaller screens */
+    
+    /* Responsive width calculation: 100% of viewport minus 20px margin on each side */
+    width: calc(100% - 40px); /* 100% - (20px left margin + 20px right margin) */
+    max-width: 600px; /* Still maintains maximum width on larger screens */
+    
+    /* Centering the container within the body's flex context */
+    margin: 20px auto; /* 20px top/bottom margin, 'auto' for left/right to center horizontally */
     
     /* Flexbox for vertical layout within the container */
     display: flex;
     flex-direction: column;
     box-sizing: border-box; /* Ensures padding is included in width */
-    min-height: 300px; /* Ensure container has enough minimum height for spacing */
+    min-height: 300px; /* Ensures container has enough minimum height for spacing */
 }
 
 h1 {
@@ -50,16 +61,16 @@ h1 {
 
 .search-box {
     margin-bottom: 25px; /* More space below search box */
-    text-align: center; /* Center items within search-box if any */
+    /* text-align: center; This is generally for inline content. Input is block. */
 }
 
 #searchInput {
-    width: 100%; /* Use 100% and let padding/border be part of it */
+    width: 100%; /* Take full width of its parent (.search-box) */
     padding: 15px; /* Increased padding for input */
     border: 1px solid var(--medium-grey);
     border-radius: 8px; /* Slightly more rounded input */
     font-size: 1.1em; /* Slightly larger font in input */
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    box-sizing: border-box; /* Include padding and border in the element's total width */
     transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
 }
 
@@ -80,32 +91,32 @@ h1 {
 
 .results-container {
     max-height: 550px; /* Slightly taller scroll area */
-    overflow-y: auto;
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds max-height */
     border: 1px solid var(--medium-grey);
     border-radius: 8px; /* Matching border radius */
-    padding: 0; /* Remove initial padding, add to list items */
+    padding: 0; /* Remove initial padding, padding handled by list items */
     text-align: left; /* Keep results text aligned left */
     background-color: var(--white);
-    flex-grow: 1; /* Allow results to take up available space in the flex container */
+    flex-grow: 1; /* Allows the results container to take up available vertical space in the flex column */
     margin-bottom: 20px; /* Add some space between results and footer */
 }
 
 .results-container ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    list-style: none; /* Remove default bullet points */
+    padding: 0; /* Remove default list padding */
+    margin: 0; /* Remove default list margin */
 }
 
 .results-container li {
-    padding: 15px 20px; /* More padding for list items */
-    border-bottom: 1px solid var(--medium-grey); /* Clearer dividers */
+    padding: 15px 20px; /* More padding for individual list items */
+    border-bottom: 1px solid var(--medium-grey); /* Clearer dividers between items */
     font-size: 1.05em; /* Slightly larger font */
     color: var(--dark-grey);
     transition: background-color 0.2s ease; /* Smooth hover effect */
 }
 
 .results-container li:last-child {
-    border-bottom: none;
+    border-bottom: none; /* No border on the last item */
 }
 
 .results-container li:hover {
@@ -115,42 +126,40 @@ h1 {
 
 /* Attribution Footer Styling */
 footer {
-    flex-shrink: 0; /* Prevents the footer from shrinking */
-    text-align: center; /* Centers the text within the footer */
-    width: 100%; /* Ensures it takes full width within the container */
-    margin-top: auto; /* Pushes the footer to the bottom of the flex container */
-    padding-top: 20px; /* Add some padding above the text */
+    flex-shrink: 0; /* Prevents the footer from shrinking when space is limited */
+    text-align: center; /* Centers the text content within the footer */
+    width: 100%; /* Ensures it takes full width within its parent (.container) */
+    margin-top: auto; /* This is the key flexbox property to push it to the bottom */
+    padding-top: 20px; /* Adds space above the attribution text */
 }
 
 .attribution {
-    font-size: 0.8em; /* Smaller text */
-    color: #6c757d;   /* Muted grey color */
+    font-size: 0.8em; /* Smaller text size for attribution */
+    color: #6c757d;   /* Muted grey color for attribution */
 }
 
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 480px) {
-    body {
-        padding: 10px;
-    }
-
     .container {
-        padding: 20px;
-        border-radius: 5px; /* Slightly less rounded on small screens */
+        padding: 20px; /* Reduced internal padding for small screens */
+        border-radius: 5px; /* Slightly less rounded corners on small screens */
+        width: calc(100% - 20px); /* Adjust width for 10px margin on each side on small screens */
+        margin: 10px auto; /* Smaller top/bottom margin for small screens */
     }
 
     h1 {
-        font-size: 1.8em;
+        font-size: 1.8em; /* Smaller heading on small screens */
         margin-bottom: 20px;
     }
 
     #searchInput {
         font-size: 1em;
-        padding: 12px;
+        padding: 12px; /* Slightly less padding for input on small screens */
     }
 
     .results-container li {
         font-size: 1em;
-        padding: 12px 15px;
+        padding: 12px 15px; /* Slightly less padding for list items on small screens */
     }
 }
