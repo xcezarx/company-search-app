@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         results.forEach(company => {
             const li = document.createElement('li');
             // IMPORTANT: Replace 'CompanyNameColumn' with the actual header name of your company name column in the CSV.
-            li.textContent = company.CompanyNameColumn || JSON.stringify(company); // Fallback if column name is wrong
+            li.textContent = company['Organisation Name'] || JSON.stringify(company); // Fallback if column name is wrong
             ul.appendChild(li);
         });
         resultsContainer.appendChild(ul);
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             const filteredCompanies = companyData.filter(company => {
                 // IMPORTANT: Adjust 'CompanyNameColumn' here too
-                return company.CompanyNameColumn && String(company.CompanyNameColumn).toLowerCase().includes(searchTerm);
+                return company['Organisation Name'] && String(company['Organisation Name']).toLowerCase().includes(searchTerm);
             });
             displayResults(filteredCompanies);
         }, 10); // A tiny delay to allow UI to update
