@@ -14,6 +14,9 @@ const firebaseConfig = {
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, collection, writeBatch, query, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+// NEW: Import Papa from the PapaParse CDN as a module
+import Papa from 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js';
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -33,8 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     onAuthStateChanged(auth, (user) => {
         if (user) {
             console.log("Firebase authenticated anonymously:", user.uid);
-            uploadMessage.textContent = 'Authenticated. Ready to upload CSV.';
-            uploadButton.disabled = false; // Enable button once authenticated
+            uploadMessage.textContent = 'Authenticated. Ready to upload CSV. Select a file.';
+            // Button is enabled after file selection, not just auth.
+            // uploadButton.disabled = false; 
         } else {
             signInAnonymously(auth)
                 .then(() => {
@@ -43,10 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch((error) => {
                     console.error("Anonymous authentication failed:", error);
                     uploadMessage.textContent = `Authentication failed: ${error.message}. Cannot upload.`;
-                    uploadButton.disabled = true;
+                    uploadButton.disabled = true; // Still disable if auth fails
                 });
         }
     });
+
+    // Disable button initially until a file is selected and parsed
+    uploadButton.disabled = true; 
+    uploadMessage.textContent = 'Authenticating... Please select a CSV file.';
+
 
     // Event listener for file selection
     csvFileInput.addEventListener('change', (event) => {
@@ -55,7 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadMessage.textContent = 'Parsing CSV file...';
             uploadButton.disabled = true; // Disable until parsing is done
 
-            PapaParse.parse(file, {
+            // Use the imported Papa object
+            Papa.parse(file, { // Changed from PapaParse.parse to Papa.parse
                 header: true, // Assuming the first row is headers
                 dynamicTyping: true, // Convert numbers/booleans to their types
                 skipEmptyLines: true,
@@ -69,8 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         uploadButton.disabled = true;
                     } else {
                         parsedData = results.data;
-                        uploadMessage.textContent = `CSV parsed successfully. Found ${parsedData.length} rows.`;
-                        uploadButton.disabled = false; // Enable button for upload
+                        uploadMessage.textContent = `CSV parsed successfully. Found ${parsedData.length} rows. Click Upload.`;
+                        // Enable button only if authenticated AND file parsed
+                        if (auth.currentUser) { // Check if user is already authenticated
+                            uploadButton.disabled = false; 
+                        } else {
+                            // If auth not yet complete (though it should be by now), leave disabled
+                            uploadMessage.textContent += " Waiting for authentication to complete...";
+                        }
                     }
                 },
                 error: (error) => {
@@ -159,7 +175,6 @@ async function uploadCompaniesToFirestore(dbInstance, data, onProgress) {
         const chunk = data.slice(i, i + batchSize);
 
         chunk.forEach(row => {
-            // Ensure you have a 'name' field, and add other fields as needed
             // Firestore documents cannot contain undefined values.
             const companyData = {};
             for (const key in row) {
