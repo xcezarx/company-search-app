@@ -1,9 +1,10 @@
+// script.js
 // No Firebase configuration or imports needed anymore in script.js
 // as data will be loaded from CSV via the worker.
 
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
-    const searchButton = document.getElementById('searchButton');
+    const searchButton = document.getElementById('searchButton'); // Keep reference even if button is removed from HTML
     const resultsContainer = document.getElementById('results');
     const loadingMessage = document.getElementById('loadingMessage');
 
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize worker when the DOM is loaded
     initializeWorker();
 
-    // --- NEW: Initiate data loading in the worker ---
+    // --- Initiate data loading in the worker ---
     function initiateWorkerDataLoad() {
         loadingMessage.textContent = 'Loading and indexing companies... This might take a moment.';
         loadingMessage.style.display = 'block';
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (query.length < 2) {
             loadingMessage.style.display = 'none';
-            resultsContainer.innerHTML = '<p style="text-align: center; color: #6c757d; margin-top: 20px;">Type at least 2 characters and click Search.</p>';
+            resultsContainer.innerHTML = '<p style="text-align: center; color: #6c757d; margin-top: 20px;">Type at least 2 characters to search.</p>';
             return;
         }
 
@@ -75,45 +76,35 @@ document.addEventListener('DOMContentLoaded', () => {
         searchWorker.postMessage({ type: 'search', query: query });
     }
 
-// ... (rest of your script.js code above, before EVENT LISTENERS) ...
+    // --- EVENT LISTENERS (UPDATED FOR LIVE SEARCH) ---
 
-// --- EVENT LISTENERS (UPDATED FOR LIVE SEARCH) ---
-
-// Debounce function to limit how often performSearch is called
-// This prevents searching on every single keystroke, improving performance.
-function debounce(func, delay) {
-    let timeout;
-    return function(...args) {
-        const context = this;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), delay);
-    };
-}
-
-// Attach the debounced search function to the input event
-// The search will now trigger after a short pause (e.g., 300ms) once typing stops
-searchInput.addEventListener('input', debounce(() => {
-    performSearch();
-}, 300)); // Adjust debounce delay (in milliseconds) as needed
-
-// Optionally, you can keep the Enter key listener if desired,
-// but with live search, it's often not strictly necessary.
-searchInput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-        // If you keep this, ensure it's not double-triggering with debounce
-        // For simplicity, with live search, often the Enter key does nothing specific
-        // or just acts as an immediate search. Let's make it an immediate search.
-        performSearch();
+    // Debounce function to limit how often performSearch is called
+    // This prevents searching on every single keystroke, improving performance.
+    function debounce(func, delay) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), delay);
+        };
     }
-});
 
-// --- REMOVE THE searchButton.addEventListener LINE IF YOU WANT TO ELIMINATE THE BUTTON ---
-// If you physically remove the button from index.html, this line will cause an error
-// so it's safer to remove it here if you're removing the button from HTML.
-// If you just want it to be non-functional, you could leave it out or comment it.
-// searchButton.addEventListener('click', performSearch); // <-- DELETE OR COMMENT OUT THIS LINE
+    // Attach the debounced search function to the input event
+    searchInput.addEventListener('input', debounce(() => {
+        performSearch();
+    }, 300)); // Adjust debounce delay (in milliseconds) as needed
 
-// ... (rest of your script.js code below displayResults function) ...
+    // Optionally keep Enter key for immediate search
+    searchInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // If you physically removed the search button from index.html, you can comment out or remove this line:
+    // searchButton.addEventListener('click', performSearch);
+
+
     // Function to display search results
     function displayResults(results, query) {
         resultsContainer.innerHTML = ''; // Clear previous results
@@ -143,7 +134,27 @@ searchInput.addEventListener('keypress', (event) => {
                 `;
 
                 // Add details only if they exist in the company object
-                // These properties are now expected to come from search.worker.js
                 if (company.townCity) {
                     detailsHtml += `<p><strong>Town/City:</strong> ${company.townCity}</p>`;
                 }
+                if (company.county) {
+                    detailsHtml += `<p><strong>County:</strong> ${company.county}</p>`;
+                }
+                if (company.typeRating) {
+                    detailsHtml += `<p><strong>Type & Rating:</strong> ${company.typeRating}</p>`;
+                }
+                if (company.route) {
+                    detailsHtml += `<p><strong>Route:</strong> ${company.route}</p>`;
+                }
+
+                li.innerHTML = detailsHtml;
+                ul.appendChild(li);
+            });
+            resultsContainer.appendChild(ul);
+        } else {
+            resultsCountPara.textContent = `No companies found matching "${query}".`;
+            resultsContainer.appendChild(resultsCountPara);
+            resultsContainer.innerHTML += '<p style="text-align: center; color: #6c757d; margin-top: 20px;">Try a different search term.</p>';
+        }
+    }
+}); // This closing brace for DOMContentLoaded was likely the missing one!
