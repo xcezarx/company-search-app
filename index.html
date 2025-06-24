@@ -3,30 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Search</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Company Search App</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Find Skilled Worker Visa Sponsors</h1> 
+        <h1>Company Search</h1>
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search company names...">
+            <input type="text" id="searchInput" placeholder="Search by company name...">
             <button id="searchButton">Search</button>
-            <div id="loadingMessage" class="loading-message">Loading companies...</div>
         </div>
-
+        <p id="loadingMessage" class="message"></p>
         <div id="results" class="results-container">
             </div>
-
-        <footer>
-            <p class="attribution">Company list based on a public data from GOV.UK.</p>
-            <p class="manage-data"><a href="upload.html">Manage Data (Upload CSV)</a></p>
-        </footer>
     </div>
 
-    <script type="module" src="script.js"></script> </body>
+    <script src="script.js" type="module"></script>
+</body>
 </html>
