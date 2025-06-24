@@ -6,12 +6,14 @@ html, body {
 
 body {
     font-family: var(--font-primary);
-    /* No padding here; spacing around the container is managed by its margin and width */
     background-color: var(--light-grey);
     color: var(--dark-grey);
+    /* --- CRITICAL CHANGE HERE --- */
+    /* Change flex-direction to column to stack children vertically */
     display: flex;
-    justify-content: center; /* Centers the .container horizontally */
-    align-items: flex-start; /* Aligns content to the top vertically */
+    flex-direction: column; /* Stack .container and .footer vertically */
+    align-items: center;    /* Center children (like .container and .footer) horizontally */
+    /* --- END CRITICAL CHANGE --- */
     min-height: 100vh; /* Ensures body takes at least full viewport height */
     box-sizing: border-box; /* Include padding and border in element's total width and height */
     overflow-x: hidden; /* Prevent horizontal scrolling if any unexpected overflow occurs */
@@ -19,12 +21,12 @@ body {
 
 /* Professional Color Palette & Typography Variables */
 :root {
-    --primary-blue: #0056b3;      /* A deep, professional blue for main elements */
-    --accent-blue: #007bff;       /* A slightly brighter blue for highlights */
-    --light-grey: #f8f9fa;        /* Very light grey for backgrounds */
-    --medium-grey: #e9ecef;       /* A bit darker grey for borders/dividers */
-    --dark-grey: #343a40;         /* Dark grey for text (softer than black) */
-    --white: #ffffff;             /* Pure white for containers */
+    --primary-blue: #0056b3;      /* A deep, professional blue for main elements */
+    --accent-blue: #007bff;       /* A slightly brighter blue for highlights */
+    --light-grey: #f8f9fa;        /* Very light grey for backgrounds */
+    --medium-grey: #e9ecef;       /* A bit darker grey for borders/dividers */
+    --dark-grey: #343a40;         /* Dark grey for text (softer than black) */
+    --white: #ffffff;             /* Pure white for containers */
 
     --font-primary: 'Inter', sans-serif;
     --font-heading: 'Roboto', sans-serif; /* You can use Inter for everything too if preferred */
@@ -35,14 +37,14 @@ body {
     padding: 30px; /* Increased padding inside the container */
     border-radius: 10px; /* Slightly more rounded corners */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
-    
+
     /* Responsive width calculation: 100% of viewport minus 20px margin on each side */
     width: calc(100% - 40px); /* 100% - (20px left margin + 20px right margin) */
     max-width: 600px; /* Still maintains maximum width on larger screens */
-    
+
     /* Centering the container within the body's flex context */
     margin: 20px auto; /* 20px top/bottom margin, 'auto' for left/right to center horizontally */
-    
+
     /* Flexbox for vertical layout within the container */
     display: flex;
     flex-direction: column;
@@ -124,16 +126,15 @@ h1 {
     cursor: pointer; /* Indicate clickable/hoverable */
 }
 
-
-
 .attribution {
     font-size: 0.8em; /* Smaller text size for attribution */
-    color: #6c757d;   /* Muted grey color for attribution */
+    color: #6c757d;   /* Muted grey color for attribution */
 }
+
 /* Add styles for the footer */
 .footer {
     display: block; /* Ensures it behaves as a block element */
-    width: 100%;    /* Makes it span the full width of its parent */
+    width: 100%;    /* Makes it span the full width of its parent */
     text-align: center;
     margin-top: 40px; /* Space above the footer */
     padding: 20px;
