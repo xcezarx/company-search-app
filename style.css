@@ -134,8 +134,8 @@ h1 {
 /* Add styles for the footer */
 .footer {
     display: block; /* Ensures it behaves as a block element */
-    width: 100%;    /* Makes it span the full width of its parent */
-    text-align: center;
+    width: 100%;    /* Makes it span the full width of its parent (the body) */
+    text-align: center; /* Centers the text within the footer */
     margin-top: 40px; /* Space above the footer */
     padding: 20px;
     background-color: #f8f9fa; /* Light background */
@@ -143,6 +143,9 @@ h1 {
     color: #6c757d; /* Muted text color */
     font-size: 0.85em;
     box-sizing: border-box; /* Include padding/border in the width calculation */
+    /* Add explicit centering for the block itself in case of flex issues */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .footer p {
