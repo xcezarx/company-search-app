@@ -166,7 +166,7 @@ async function clearCompaniesCollection(dbInstance) {
 // Function to upload parsed CSV data to Firestore in batches
 async function uploadCompaniesToFirestore(dbInstance, data, onProgress) {
     const companiesCollectionRef = collection(dbInstance, 'companies');
-    const batchSize = 500; // Firestore allows up to 500 operations per batch
+    const batchSize = 100; // Firestore allows up to 500 operations per batch
     let uploadedCount = 0;
 
     for (let i = 0; i < data.length; i += batchSize) {
