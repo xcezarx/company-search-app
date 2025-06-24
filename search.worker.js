@@ -1,19 +1,20 @@
+// Import PapaParse library into the worker's scope
+importScripts('https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js');
+
 let allCompanies = []; // Stores all parsed companies
-let searchIndex = {}; // Stores the search index (e.g., using object for fast lookup)
+let searchIndex = {}; // Stores the search index
 
 // Function to build the search index
 function buildSearchIndex(companies) {
     searchIndex = {}; // Reset index
     companies.forEach(company => {
-        // Ensure you're pulling the correct name from the Firestore document structure
-        const companyName = company['Organisation Name'] || ''; 
+        const companyName = company['Organisation Name'] || company.name || '';
         if (companyName) {
             const lowerCaseName = companyName.toLowerCase();
-            // Store original company data, indexed by a simplified name or unique ID
-            searchIndex[lowerCaseName] = company; 
+            searchIndex[lowerCaseName] = company;
         }
     });
-    console.log("Search index built with", Object.keys(searchIndex).length, "companies.");
+    console.log("Worker: Search index built with", Object.keys(searchIndex).length, "companies.");
 }
 
 // Function to perform the search
@@ -25,17 +26,17 @@ function performSearch(query) {
     const results = [];
 
     // Simple substring search in company names
-    for (const name in searchIndex) {
-        if (name.includes(lowerCaseQuery)) {
-            // *** CRITICAL CHANGE HERE: Create a new object for the result ***
-            // Include a 'name' property that script.js expects
-            // And any other properties you might want to display later
+    for (const nameKey in searchIndex) {
+        if (nameKey.includes(lowerCaseQuery)) {
+            const companyData = searchIndex[nameKey];
             results.push({
-                name: searchIndex[name]['Organisation Name'], // Use the correct field from your Firestore doc
-                // If you want to display other fields later, include them here:
-                // county: searchIndex[name]['County'],
-                // townCity: searchIndex[name]['Town/City'],
-                // ...etc.
+                name: companyData['Organisation Name'] || companyData.name, // Ensure 'name' is always present for display
+                // *** ADD THESE LINES TO INCLUDE MORE DATA ***
+                townCity: companyData['Town/City'],
+                county: companyData['County'],
+                typeRating: companyData['Type & Rating'],
+                route: companyData['Route']
+                // Add any other fields from your CSV here
             });
         }
     }
@@ -43,14 +44,41 @@ function performSearch(query) {
 }
 
 // Event listener for messages from the main thread
-self.onmessage = (event) => {
+self.onmessage = async (event) => {
     const { type, payload, query } = event.data;
 
-    if (type === 'load_data') {
-        // Payload is now the array of company objects directly from Firestore
-        allCompanies = payload;
-        buildSearchIndex(allCompanies);
-        self.postMessage({ type: 'data_loaded', payload: allCompanies }); // Confirm data loaded and indexed
+    if (type === 'load_csv') {
+        const csvFilePath = payload;
+        try {
+            const response = await fetch(csvFilePath);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const csvText = await response.text();
+
+            Papa.parse(csvText, {
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    if (results.errors.length) {
+                        console.error('Worker: CSV Parsing Errors:', results.errors);
+                        self.postMessage({ type: 'error', payload: { message: `CSV parsing error: ${results.errors[0].message}` } });
+                        return;
+                    }
+                    allCompanies = results.data;
+                    buildSearchIndex(allCompanies);
+                    self.postMessage({ type: 'data_loaded' });
+                },
+                error: (error) => {
+                    console.error('Worker: CSV Read Error:', error);
+                    self.postMessage({ type: 'error', payload: { message: `CSV read error: ${error.message}` } });
+                }
+            });
+        } catch (error) {
+            console.error('Worker: Failed to load or parse CSV:', error);
+            self.postMessage({ type: 'error', payload: { message: `Failed to load CSV: ${error.message}` } });
+        }
     } else if (type === 'search') {
         const results = performSearch(query);
         self.postMessage({ type: 'search_results', payload: { results, query } });
