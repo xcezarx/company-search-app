@@ -75,15 +75,45 @@ document.addEventListener('DOMContentLoaded', () => {
         searchWorker.postMessage({ type: 'search', query: query });
     }
 
-    // --- EVENT LISTENERS ---
-    searchButton.addEventListener('click', performSearch);
+// ... (rest of your script.js code above, before EVENT LISTENERS) ...
 
-    searchInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            performSearch();
-        }
-    });
+// --- EVENT LISTENERS (UPDATED FOR LIVE SEARCH) ---
 
+// Debounce function to limit how often performSearch is called
+// This prevents searching on every single keystroke, improving performance.
+function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+}
+
+// Attach the debounced search function to the input event
+// The search will now trigger after a short pause (e.g., 300ms) once typing stops
+searchInput.addEventListener('input', debounce(() => {
+    performSearch();
+}, 300)); // Adjust debounce delay (in milliseconds) as needed
+
+// Optionally, you can keep the Enter key listener if desired,
+// but with live search, it's often not strictly necessary.
+searchInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        // If you keep this, ensure it's not double-triggering with debounce
+        // For simplicity, with live search, often the Enter key does nothing specific
+        // or just acts as an immediate search. Let's make it an immediate search.
+        performSearch();
+    }
+});
+
+// --- REMOVE THE searchButton.addEventListener LINE IF YOU WANT TO ELIMINATE THE BUTTON ---
+// If you physically remove the button from index.html, this line will cause an error
+// so it's safer to remove it here if you're removing the button from HTML.
+// If you just want it to be non-functional, you could leave it out or comment it.
+// searchButton.addEventListener('click', performSearch); // <-- DELETE OR COMMENT OUT THIS LINE
+
+// ... (rest of your script.js code below displayResults function) ...
     // Function to display search results
     function displayResults(results, query) {
         resultsContainer.innerHTML = ''; // Clear previous results
