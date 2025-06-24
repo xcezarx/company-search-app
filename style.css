@@ -132,6 +132,8 @@ h1 {
 }
 /* Add styles for the footer */
 .footer {
+    display: block; /* Ensures it behaves as a block element */
+    width: 100%;    /* Makes it span the full width of its parent */
     text-align: center;
     margin-top: 40px; /* Space above the footer */
     padding: 20px;
@@ -139,6 +141,7 @@ h1 {
     border-top: 1px solid #e9ecef; /* Top border */
     color: #6c757d; /* Muted text color */
     font-size: 0.85em;
+    box-sizing: border-box; /* Include padding/border in the width calculation */
 }
 
 .footer p {
